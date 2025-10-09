@@ -1,11 +1,6 @@
 ﻿using Domain.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories;
 
@@ -27,4 +22,5 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _context.Set<T>().Update(entity);
         await _context.SaveChangesAsync();
     }
+    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 }

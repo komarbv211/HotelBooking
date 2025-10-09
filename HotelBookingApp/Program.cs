@@ -1,7 +1,8 @@
 using Application;
 using Infrastructure;
 using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<HotelBookingDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 28))
-    ));
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
 
 // Application + Infrastructure DI
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -24,8 +25,12 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<HotelBookingDbContext>();
-    SeedData.Initialize(context); 
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<HotelBookingDbContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    await SeedData.InitializeAsync(context, userManager, roleManager);
 }
 
 // Middleware

@@ -8,12 +8,14 @@ namespace Infrastructure.Repositories;
 public class BookingRepository : GenericRepository<Booking>, IBookingRepository
 {
     public BookingRepository(HotelBookingDbContext context) : base(context) { }
-
+  
     public async Task<IEnumerable<Booking>> GetBookingsByUserAsync(string userId)
-        => await _context.Bookings
+    {
+        return await _context.Bookings
             .Include(b => b.Room)
+                .ThenInclude(r => r.Hotel)
             .Where(b => b.UserId == userId)
-            .ToListAsync();
+            .ToListAsync();    }
 
     public async Task<int> GetBookingCountForHotelAsync(int hotelId)
         => await _context.Bookings

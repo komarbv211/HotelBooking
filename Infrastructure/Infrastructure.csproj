@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.20" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,8 +26,7 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj" />
+  <ItemGroup>    
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
