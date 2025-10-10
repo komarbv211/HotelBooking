@@ -12,6 +12,19 @@ public class RoomRepository : GenericRepository<Room>, IRoomRepository
     public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(int hotelId, DateTime checkIn, DateTime checkOut)
     {
         return await _context.Rooms
+            .Include(r => r.Hotel)
+            .Where(r => r.HotelId == hotelId &&
+                        !_context.Bookings.Any(b =>
+                            b.RoomId == r.Id &&
+                            b.CheckIn < checkOut &&
+                            b.CheckOut > checkIn))
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Room>> GetAvailableRoomsByHotelAsync(int hotelId, DateTime checkIn, DateTime checkOut)
+    {
+        return await _context.Rooms
+            .Include(r => r.Hotel)
             .Where(r => r.HotelId == hotelId &&
                         !_context.Bookings.Any(b =>
                             b.RoomId == r.Id &&
@@ -20,4 +33,3 @@ public class RoomRepository : GenericRepository<Room>, IRoomRepository
             .ToListAsync();
     }
 }
-

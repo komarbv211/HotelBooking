@@ -31,11 +31,32 @@ public class BookingService : IBookingService
 
     public async Task<BookingDto> CreateBookingAsync(CreateBookingDto dto)
     {
-        // Перевірка доступності кімнати
-        var availableRooms = await _roomRepository.GetAvailableRoomsAsync(dto.RoomId, dto.CheckIn, dto.CheckOut);
-        if (!availableRooms.Any(r => r.Id == dto.RoomId))
-            throw new Exception("Room is not available for selected dates");
+        var room = await GetRoomOrThrowAsync(dto.RoomId);
+        await EnsureRoomIsAvailableAsync(room, dto.CheckIn, dto.CheckOut);
 
+        var booking = await CreateAndSaveBookingAsync(dto);
+
+        return MapToBookingDto(room, booking);
+    }
+
+    private async Task<Room> GetRoomOrThrowAsync(int roomId)
+    {
+        var room = await _roomRepository.GetByIdAsync(roomId);
+        if (room == null)
+            throw new KeyNotFoundException("Кімната не знайдена.");
+
+        return room;
+    }
+
+    private async Task EnsureRoomIsAvailableAsync(Room room, DateTime checkIn, DateTime checkOut)
+    {
+        var availableRooms = await _roomRepository.GetAvailableRoomsAsync(room.HotelId, checkIn, checkOut);
+        if (!availableRooms.Any(r => r.Id == room.Id))
+            throw new InvalidOperationException("Кімната недоступна на вибрані дати.");
+    }
+
+    private async Task<Booking> CreateAndSaveBookingAsync(CreateBookingDto dto)
+    {
         var booking = new Booking
         {
             RoomId = dto.RoomId,
@@ -45,16 +66,21 @@ public class BookingService : IBookingService
         };
 
         await _bookingRepository.AddAsync(booking);
-        await _bookingRepository.SaveChangesAsync(); 
+        await _bookingRepository.SaveChangesAsync();
 
-        var room = availableRooms.First(r => r.Id == dto.RoomId);
+        return booking;
+    }
 
+    private static BookingDto MapToBookingDto(Room room, Booking booking)
+    {
         return new BookingDto
         {
             RoomNumber = room.Number,
-            HotelName = room.Hotel.Name,
+            HotelName = room.Hotel?.Name ?? string.Empty,
             CheckIn = booking.CheckIn,
             CheckOut = booking.CheckOut
         };
     }
+
+
 }
