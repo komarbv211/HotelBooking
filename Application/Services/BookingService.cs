@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
+using System.Data;
 
 namespace Application.Services;
 
@@ -82,5 +83,17 @@ public class BookingService : IBookingService
         };
     }
 
+    public async Task<IEnumerable<BookingDto>> GetAllBookingsAsync()
+    {
+        var bookings = await _bookingRepository.GetAllBookingsAsync();
 
+        return bookings.Select(b => new BookingDto
+        {
+            RoomNumber = b.Room.Number,
+            HotelName = b.Room.Hotel.Name,
+            CheckIn = b.CheckIn,
+            CheckOut = b.CheckOut,
+            UserId = b.UserId
+        });
+    }
 }

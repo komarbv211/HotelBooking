@@ -31,6 +31,8 @@ namespace Infrastructure
             services.AddScoped<IHotelRepository, HotelRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
 
+            services.AddScoped<IAdminBookingRepository>(sp =>
+                        new AdminBookingRepository(configuration.GetConnectionString("DefaultConnection")!));
             return services;
         }
     }

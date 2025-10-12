@@ -31,16 +31,20 @@ public class UserRepository : IUserRepository
         await _userManager.AddToRoleAsync(appUser, "Client");
         await _signInManager.SignInAsync(appUser, isPersistent: false);
 
+        var roles = await _userManager.GetRolesAsync(appUser);
+
+
         return new User
         {
             Id = appUser.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            BirthDate = appUser.BirthDate
+            BirthDate = appUser.BirthDate,
+            Role = roles.FirstOrDefault() ?? "Client"
         };
     }
 
-    public async Task<User?> LoginAsync(string email, string password)
+    public async Task<User> LoginAsync(string email, string password)
     {
         var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
         if (!result.Succeeded) return null;
@@ -48,14 +52,18 @@ public class UserRepository : IUserRepository
         var appUser = await _userManager.FindByEmailAsync(email);
         if (appUser == null) return null;
 
+        var roles = await _userManager.GetRolesAsync(appUser);
+
         return new User
         {
             Id = appUser.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            BirthDate = appUser.BirthDate
+            BirthDate = appUser.BirthDate,
+            Role = roles.FirstOrDefault() ?? "Client" 
         };
     }
+
 
     public async Task LogoutAsync()
     {
@@ -67,12 +75,15 @@ public class UserRepository : IUserRepository
         var appUser = await _userManager.FindByEmailAsync(email);
         if (appUser == null) return null;
 
+        var roles = await _userManager.GetRolesAsync(appUser);
+
         return new User
         {
             Id = appUser.Id,
             Username = appUser.UserName!,
             Email = appUser.Email!,
-            BirthDate = appUser.BirthDate
+            BirthDate = appUser.BirthDate,
+            Role = roles.FirstOrDefault() ?? "Client"
         };
     }
 }

@@ -35,4 +35,13 @@ public class AccountController : ControllerBase
         await _userService.LogoutAsync();
         return Ok("Вихід виконано");
     }
+    [HttpGet("Profile")]
+    public async Task<IActionResult> Profile()
+    {
+        if (!User.Identity.IsAuthenticated) return Unauthorized();
+        var email = User.Identity.Name;
+        var user = await _userService.GetByEmailAsync(email);
+        if (user == null) return NotFound();
+        return Ok(user);
+    }
 }

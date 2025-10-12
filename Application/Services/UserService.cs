@@ -27,4 +27,8 @@ public class UserService : IUserService
 
     public Task LogoutAsync()
         => _userRepository.LogoutAsync();
+    public Task<User?> GetByEmailAsync(string email)
+    {
+        return _userRepository.GetByEmailAsync(email);
+    }
 }

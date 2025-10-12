@@ -2,6 +2,7 @@
 
 public class BookingDto
 {
+    public string UserId { get; set; } = null!;
     public string RoomNumber { get; set; } = null!;
     public string HotelName { get; set; } = null!;
     public DateTime CheckIn { get; set; }

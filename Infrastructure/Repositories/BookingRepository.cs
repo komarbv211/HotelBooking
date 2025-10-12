@@ -16,7 +16,13 @@ public class BookingRepository : GenericRepository<Booking>, IBookingRepository
                 .ThenInclude(r => r.Hotel)
             .Where(b => b.UserId == userId)
             .ToListAsync();    }
-
+    public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
+    {
+        return await _context.Bookings
+            .Include(b => b.Room)
+                .ThenInclude(r => r.Hotel)
+            .ToListAsync();
+    }
     public async Task<int> GetBookingCountForHotelAsync(int hotelId)
         => await _context.Bookings
             .CountAsync(b => b.Room.HotelId == hotelId);

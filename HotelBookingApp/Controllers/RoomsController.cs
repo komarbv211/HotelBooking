@@ -29,21 +29,4 @@ public class RoomsController : ControllerBase
     public async Task<IActionResult> GetAvailable(int hotelId, DateTime checkIn, DateTime checkOut)
         => Ok(await _roomService.GetAvailableRoomsAsync(hotelId, checkIn, checkOut));
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] RoomDto dto)
-        => Ok(await _roomService.CreateAsync(dto));
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] RoomDto dto)
-    {
-        await _roomService.UpdateAsync(id, dto);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _roomService.DeleteAsync(id);
-        return NoContent();
-    }
 }

@@ -8,4 +8,6 @@ public interface IUserService
     Task<User?> RegisterAsync(RegisterDto dto);
     Task<User?> LoginAsync(LoginDto dto);
     Task LogoutAsync();
+    Task<User?> GetByEmailAsync(string email);
+
 }
