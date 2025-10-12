@@ -1,0 +1,47 @@
+version: "3.9"
+
+networks:
+  hotelbooking-network:
+    driver: bridge
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: hotelbooking-db-host
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345"
+      MYSQL_DATABASE: "hotelbooking"
+      MYSQL_USER: "hoteluser"
+      MYSQL_PASSWORD: "hotelpass"
+    volumes:
+      - hotel-db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - hotelbooking-network
+    restart: unless-stopped
+
+  backend:
+    container_name: hotelbooking-backend
+    image: komarandrii/hotel-backend:latest
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Port=3306;Database=hotelbooking;User=hoteluser;Password=hotelpass;"
+    ports:
+      - "5817:8080"
+    networks:
+      - hotelbooking-network
+    restart: unless-stopped
+
+  frontend:
+    container_name: hotelbooking-frontend
+    image: komarandrii/hotelbooking-frontend:latest
+    ports:
+      - "5092:80"
+    networks:
+      - hotelbooking-network
+    restart: unless-stopped    
+
+volumes:
+  hotel-db-data:
